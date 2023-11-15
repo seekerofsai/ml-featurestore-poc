@@ -3,10 +3,10 @@ from feast import (
     ValueType,
 )
 
-lead = Entity(
-    name="lead",
-    join_keys=["lead_id"],
-    description="lead id",
+l = Entity(
+    name="l",
+    join_keys=["l_id"],
+    description="l id",
     value_type=ValueType.INT64
 )
 

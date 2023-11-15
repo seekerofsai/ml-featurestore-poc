@@ -11,7 +11,7 @@ from .entities import *
 bno_features_view = FeatureView(
     name="bno_features",
     description="bno scores",
-    entities=[lead],
+    entities=[l],
     ttl=timedelta(days=90),
     schema=[
         Field(name="service_ntv_per_booking", dtype=Float32),
@@ -20,7 +20,7 @@ bno_features_view = FeatureView(
         Field(name="service_percent_canceled", dtype=Float32),
     ],
     online=True,
-    source=leadsscoring_bno_features,
+    source=lsscoring_bno_features,
     tags={"production": "True"},
     owner="bhanu.neti@angi.com",
 )
@@ -37,7 +37,7 @@ bno_bookings_view = FeatureView(
         Field(name="service_percent_canceled", dtype=Float32),
     ],
     online=True,
-    source=leadsscoring_bno_bookings,
+    source=lsscoring_bno_bookings,
     tags={"production": "True"},
     owner="bhanu.neti@angi.com",
 )
