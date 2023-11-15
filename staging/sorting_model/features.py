@@ -18,7 +18,7 @@ _v1_daily_view = FeatureView(
     source=_v1_training_daily,
 
     tags={"production": "False"},
-    owner="data_science@angi.com",
+    owner="data_science@abc.com",
 )
 
 

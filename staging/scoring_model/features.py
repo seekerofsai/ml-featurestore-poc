@@ -22,7 +22,7 @@ bno_features_view = FeatureView(
     online=True,
     source=lsscoring_bno_features,
     tags={"production": "True"},
-    owner="bhanu.neti@angi.com",
+    owner="abc@abc.com",
 )
 # name used for dyanamodb table name for online store
 bno_bookings_view = FeatureView(
@@ -39,5 +39,5 @@ bno_bookings_view = FeatureView(
     online=True,
     source=lsscoring_bno_bookings,
     tags={"production": "True"},
-    owner="bhanu.neti@angi.com",
+    owner="abc@abc.com",
 )

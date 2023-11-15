@@ -4,5 +4,5 @@ from .features import *
 feature_service = FeatureService(
     name="_model_v1",
     features=[_v1_daily_view],
-    owner="bhanu.neti@angi.com",
+    owner="abc@abc.com",
 )

@@ -12,7 +12,7 @@ variables:
     entrypoint: [""]
 
   tags:
-    - angieslist
+    - staging
 
   before_script:
     - amazon-linux-extras install docker
