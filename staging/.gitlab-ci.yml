@@ -1,0 +1,24 @@
+stages:
+  - stage_apply
+  - stage_package
+variables:
+  ENVIRONMENT: "dev"
+  SECRET_NAME_PREFIX: "/data_platform/dev/featurestore/"
+apply:
+  stage: stage_apply
+
+  script:
+    - echo 'Applying changes to feature configurations in staging'
+    - echo 'Reading secrets and setting environment variables'
+    -
+    - ./workflows/applychanges.sh
+
+
+package:
+  stage: stage_package
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  environment: staging
+  script:
+    - echo 'Building docker image for staging'
+   - aws s3 ...
+   - aws create-deployment ...

@@ -1,0 +1,4 @@
+variables:
+    AWS_DEFAULT_REGION: us-west-2
+    DATA_PLATFORM_DEV_ROLE_ARN: arn:aws:iam::910060188380:role/admin
+    DATA_PLATFORM_PROD_ROLE_ARN: arn:aws:iam::208562385761:role/admin

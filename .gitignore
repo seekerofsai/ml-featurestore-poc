@@ -1,0 +1,12 @@
+.project
+.metadata
+.classpath
+.settings/
+**/Thumbs.db
+target
+*.iml
+.idea/
+.DS_STORE
+.factorypath
+*.tgz
+.gradle

@@ -1,0 +1,14 @@
+variables:
+  ENDPOINT_NAME: $DEV_ENDPOINT_NAME
+  when: manual
+  allow_failure: false
+  script:
+  - echo "dev preview"
+  - python3 ml-model-ci-cd-scripts/deploy-model/preview-changes.py
+  stage: dev
+  tags:
+  - gitlab-runner-cloudeng
+  needs: []
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/roll-back-endpoint-config-$CI_PIPELINE_ID-$CI_JOB_STAGE.yml

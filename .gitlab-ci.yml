@@ -1,0 +1,101 @@
+stages:
+  - stage_apply
+  - stage_package
+  - production_apply
+  - production_package
+  - triggers
+image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+tags:
+    - gitlab-runner-cloudeng
+
+variables:
+    IMAGE_NAME: $CI_PROJECT_NAME
+    AWS_ACCESS_KEY_ID: $DATA_PLATFORM_PROD__ECR_AWS_ACCESS_KEY_ID
+    AWS_ECR_ACCOUNT_URL: $DATA_PLATFORM_PROD__AWS_ECR_ACCOUNT_URL
+    AWS_REGION: $DATA_PLATFORM_PROD__AWS_REGION
+    AWS_SECRET_ACCESS_KEY: $DATA_PLATFORM_PROD__ECR_AWS_SECRET_ACCESS_KEY
+    SNOWFLAKE_ACCOUNT : ""
+    SNOWFLAKE_USER : ""
+    SNOWFLAKE_PASSWORD : ""
+    SNOWFLAKE_ROLE": ""
+    SNOWFLAKE_WAREHOUSE": ""
+    SNOWFLAKE_DATABASE": ""
+    SNOWFLAKE_SCHEMA": ""
+    POSTGRESUSER": ""
+    POSTGRESPWD": ""
+    POSTGRESHOST": ""
+    POSTGRESPORT" : ""
+    POSTGRESDB": ""
+    REDISCONN": ""
+    REDISPWD": ""
+
+trigger_staging:
+  stage: triggers
+  trigger:
+    include: staging/.gitlab-ci.yml
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+    - changes:
+        - staging/*
+  only:
+      - manual
+
+
+
+trigger_production:
+  stage: triggers
+  trigger:
+    include: production/.gitlab-ci.yml
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+    - changes:
+        - production/*
+
+staging:
+  stage: stage_apply
+
+  script:
+    - echo 'Applying changes to feature configurations in staging'
+    - ./workflows/applychanges.sh
+
+  only:
+    - merge_requests
+    - master
+
+production:
+  stage: production_apply
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  environment: production
+  script:
+   - echo 'Applying changes to feature configurations in production'
+   - aws ecr get-login-password --region region | docker login --username AWS --password-stdin aws_account_id.dkr.ecr.region.amazonaws.com
+   - docker tag e9ae3c220b23 aws_account_id.dkr.ecr.us-west-2.amazonaws.com/my-repository:tag
+   - docker push aws_account_id.dkr.ecr.us-west-2.amazonaws.com/my-repository:tag
+
+  only:
+    - merge_requests
+    - master
+
+staging_package:
+  stage: staging_package
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  environment: staging
+  script:
+    - echo 'Building docker image for staging'
+   - aws s3 ...
+   - aws create-deployment ...
+  only:
+    - merge_requests
+    - master
+
+
+
+production_package:
+  stage: production_package
+
+  script:
+    - echo 'Building docker image for production'
+
+  only:
+    - merge_requests
+    - master

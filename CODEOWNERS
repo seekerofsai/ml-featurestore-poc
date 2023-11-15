@@ -1,0 +1,3 @@
+# The CODEOWNER file should be update after INFRA team's approval. Post the MR in ask-continuous-delivery channel for approval
+CODEOWNERS @angi1/continuous-delivery
+*CODEOWNERS @angi1/continuous-delivery

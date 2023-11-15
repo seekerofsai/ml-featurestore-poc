@@ -1,0 +1,37 @@
+variables:
+  AWS_ECR_ACCOUNT_URL: 945430712069.dkr.ecr.us-east-2.amazonaws.com
+  IMAGE_NAME: $CI_PROJECT_NAME
+
+  AWS_REGION: us-east-1
+
+  TAGS: "-t $AWS_ECR_ACCOUNT_URL/$IMAGE_NAME:$CI_JOB_ID"
+
+.build_and_publish-template: &build_and_publish-template
+  image:
+    name: amazon/aws-cli
+    entrypoint: [""]
+
+  tags:
+    - angieslist
+
+  before_script:
+    - amazon-linux-extras install docker
+    - aws --version
+    - docker --version
+
+  script:
+    - |
+      if [ -f "./build-artifacts/build_version" ]; then
+        BUILD_ID=$(cat ./build-artifacts/build_version)
+        echo "Adding build version $BUILD_ID tag to list of tags"
+        TAGS="$TAGS -t $AWS_ECR_ACCOUNT_URL/$IMAGE_NAME:$BUILD_ID"
+      fi
+    - TAGS="$TAGS -t $AWS_ECR_ACCOUNT_URL/$IMAGE_NAME:$(echo $CI_COMMIT_REF_NAME | tr -Cd '[:alnum:]_.-' | cut -b 1-121)-latest"
+    - echo "building the  image"
+    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+    - aws configure set region "$AWS_REGION"
+    - aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_ECR_ACCOUNT_URL
+    - docker build -t $AWS_ECR_ACCOUNT_URL/$IMAGE_NAME:$CI_COMMIT_SHA $TAGS .
+    - echo "pushing  the  image"
+    - docker push $AWS_ECR_ACCOUNT_URL/$IMAGE_NAME --all-tags

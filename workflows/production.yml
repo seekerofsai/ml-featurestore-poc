@@ -1,0 +1,56 @@
+---
+1-dev-endpoint-preview:
+  variables:
+    ENDPOINT_NAME: $DEV_ENDPOINT_NAME
+  when: manual
+  allow_failure: false
+  script:
+  - echo "dev preview"
+  - python3 ml-model-ci-cd-scripts/deploy-model/preview-changes.py
+  stage: dev
+  tags:
+  - gitlab-runner-cloudeng
+  needs: []
+2-dev-endpoint-deploy:
+  variables:
+    ENDPOINT_NAME: $DEV_ENDPOINT_NAME
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_APPROVED && $CI_COMMIT_BRANCH == "master"
+  when: manual
+  stage: dev
+  allow_failure: false
+  environment:
+    name: $ENDPOINT_NAME
+    deployment_tier: development
+  script:
+  - echo "dev deploy"
+  - python3 ml-model-ci-cd-scripts/deploy-model/apply-changes.py
+  tags:
+  - gitlab-runner-cloudeng
+  needs: ["1-dev-endpoint-preview"]
+3-dev-endpoint-validate:
+  variables:
+    ENDPOINT_NAME: $DEV_ENDPOINT_NAME
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_APPROVED && $CI_COMMIT_BRANCH == "master"
+  allow_failure: false
+  script:
+  - echo "dev validate"
+  - python3 -m pytest ml-model-ci-cd-scripts/deploy-model/validate-endpoint.py
+  stage: dev
+  tags:
+  - gitlab-runner-cloudeng
+  needs: ["2-dev-endpoint-deploy"]
+4-dev-endpoint-review:
+  variables:
+    ENDPOINT_NAME: $DEV_ENDPOINT_NAME
+  rules:
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_APPROVED && $CI_COMMIT_BRANCH == "master"
+  allow_failure: false
+  script:
+  - echo "dev review"
+  - python3 ml-model-ci-cd-scripts/deploy-model/changes-review.py
+  stage: dev
+  tags:
+  - gitlab-runner-cloudeng
+  needs: ["3-dev-endpoint-validate"]
